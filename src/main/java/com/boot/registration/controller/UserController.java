@@ -1,5 +1,6 @@
 package com.boot.registration.controller;
 
+import com.boot.registration.entity.User;
 import com.boot.registration.service.SecurityService;
 import com.boot.registration.service.UserService;
 import com.boot.registration.validator.UserValidator;
@@ -23,13 +24,30 @@ public class UserController {
     private UserValidator userValidator;
 
     @GetMapping
-    public String login(){
+    public String login(Model model, String error, String logout) {
+        if (error != null)
+            model.addAttribute("error", "Your username and password is invalid.");
+
+        if (logout != null)
+            model.addAttribute("message", "You have been logged out successfully.");
+
         return "login";
     }
 
-    @RequestMapping("/hello")
-    public String hello(Model model, @RequestParam(value="name", required=false, defaultValue="World") String name) {
-        model.addAttribute("name", name);
-        return "hello";
+    @GetMapping(value = {"/", "/welcome"})
+    public String welcome() {
+        return "welcome";
     }
+
+    @GetMapping(value = "/registration")
+    public String registration(Model model) {
+        model.addAttribute("userForm", new User());
+        return "registration";
+    }
+
+//    @RequestMapping("/hello")
+//    public String hello(Model model, @RequestParam(value="name", required=false, defaultValue="World") String name) {
+//        model.addAttribute("name", name);
+//        return "hello";
+//    }
 }

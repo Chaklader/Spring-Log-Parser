@@ -1,4 +1,4 @@
-package com.boot.registration.security;
+package com.boot.registration.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
