@@ -1,4 +1,1 @@
-LOG Format
-----------
-
 2017-10-01 03:56:04.326|174.129.239.67|"GET / HTTP/1.1"|200|"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.91 Safari/537.36"
