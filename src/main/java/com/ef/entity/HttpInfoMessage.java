@@ -21,15 +21,16 @@ public class HttpInfoMessage {
     @NotEmpty
     private String status;
 
-
     public HttpInfoMessage(String status) {
         this.status = status;
     }
 
     public HttpInfoMessage() {
+
     }
 
-    public HttpInfoMessage(String status, List<IpAddress> ipAddresses) {
+    public HttpInfoMessage(Long statusId, String status, List<IpAddress> ipAddresses) {
+        this.statusId = statusId;
         this.status = status;
         this.ipAddresses = ipAddresses;
     }
@@ -50,8 +51,16 @@ public class HttpInfoMessage {
         this.status = status;
     }
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "statuses")
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "httpInfoMessages")
     private List<IpAddress> ipAddresses = new ArrayList<>();
+
+    public List<IpAddress> getIpAddresses() {
+        return ipAddresses;
+    }
+
+    public void setIpAddresses(List<IpAddress> ipAddresses) {
+        this.ipAddresses = ipAddresses;
+    }
 
     @Override
     public boolean equals(Object o) {

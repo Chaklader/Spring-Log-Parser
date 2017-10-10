@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
  */
 public class LogEntryValidator {
 
-    private Pattern pattern;
-    private Matcher matcher;
+    private static Pattern pattern;
+    private static Matcher matcher;
 
     private static final String IP_ADDRESS_PATTERN =
             "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
@@ -23,15 +23,15 @@ public class LogEntryValidator {
 
     }
 
-    public boolean iPAddressValidate(final String ip) {
+    public static boolean iPAddressValidate(final String ip) {
         return validator(ip, IP_ADDRESS_PATTERN);
     }
 
-    public boolean codeValidator(final String text) {
+    public static boolean codeValidator(final String text) {
         return validator(text, STATUS_CODE_PATTERN);
     }
 
-    public boolean validator(final String text, String pat) {
+    public static boolean validator(final String text, String pat) {
         pattern = Pattern.compile(pat);
         matcher = pattern.matcher(text);
         return matcher.matches();
