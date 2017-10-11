@@ -3,46 +3,41 @@ package com.ef.service;
 import com.ef.entity.IpAddress;
 import com.ef.entity.LogEntity;
 import com.ef.entity.HttpInfoMessage;
-import com.ef.validator.LogEntryValidator;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
-import org.springframework.http.*;
+import com.ef.service.util.DateAndTimeManager;
+import org.apache.commons.httpclient.HttpStatus;
 
 /**
  * Created by Chaklader on Oct, 2017
  */
 public class DataOrganizationHelper {
 
-    public HashMap<String, List<LogEntity>> groupRecordsByIpAddress(List<LogEntity> records) {
-        return (HashMap<String, List<LogEntity>>) records.stream()
-                .collect(Collectors.groupingBy(LogEntity::getIp));
-    }
-
-    public HashMap<String, List<LogEntity>> groupRecordsByIpAddress(List<LogEntity> records, String startDate, String duration) {
-        return (HashMap<String, List<LogEntity>>) getRecordsBetweenDur(records, startDate, duration)
-                .collect(Collectors.groupingBy(LogEntity::getIp));
-    }
-
     /*
-    * Get the map as Ip address as the key and the number of
-    * occurance as the value within certain duration
+    * get the map grouped by IP addresses with
+    * the records, start date and the duration
     * */
-    public HashMap<String, Long> countRecordsByIpAddress(List<LogEntity> records, String startDate, String duration) {
-        return (HashMap<String, Long>) getRecordsBetweenDur(records, startDate, duration)
-                .collect(Collectors.groupingBy(LogEntity::getIp, Collectors.counting()));
+    public static HashMap<String, List<LogEntity>> groupRecordsByIpAddress(List<LogEntity> records, String startDate, String duration) {
+
+        if (records == null || records.isEmpty() ||
+                startDate == null || startDate.isEmpty() ||
+                duration == null || duration.isEmpty()) {
+
+            return new HashMap<String, List<LogEntity>>();
+        }
+
+        Stream<LogEntity> logEntityStream = getRecordsBetweenDur(records, startDate, duration);
+
+        HashMap<String, List<LogEntity>> stringListHashMap = (HashMap<String, List<LogEntity>>) logEntityStream
+                .collect(Collectors.groupingBy(LogEntity::getIp));
+
+        return stringListHashMap;
     }
 
     /*
@@ -50,39 +45,40 @@ public class DataOrganizationHelper {
     * from the list of all log entries, start, duration and occurance
     * threashold
     * */
-    public HashMap<String, List<LogEntity>> groupRecordsByIpAddress(List<LogEntity> records, String startDate, String duration, int threshhold) {
+    public static HashMap<String, List<LogEntity>> groupRecordsByIpAddress(List<LogEntity> records, String startDate, String duration, int threshhold) {
 
-        return (HashMap<String, List<LogEntity>>) groupRecordsByIpAddress(records, startDate, duration)
+        if (records == null || records.isEmpty() ||
+                startDate == null || startDate.isEmpty() ||
+                duration == null || duration.isEmpty() ||
+                threshhold <= 0) {
+
+            return new HashMap<String, List<LogEntity>>();
+        }
+
+        HashMap<String, List<LogEntity>> groupRecordsMap = groupRecordsByIpAddress(records, startDate, duration);
+
+        if (groupRecordsMap == null || groupRecordsMap.isEmpty()) {
+            return null;
+        }
+
+        HashMap<String, List<LogEntity>> stringListHashMap = (HashMap<String, List<LogEntity>>) groupRecordsMap
                 .entrySet()
                 .stream()
                 .filter(a -> a.getValue().size() > threshhold)
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-    }
 
-    /*
-    * Get the date in the local time
-    * */
-    private LocalDateTime convertDateToLocalTime(Date date) {
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-    }
-
-    /*
-    * Get the date in the local time from the date String
-    * */
-    private LocalDateTime convertDateToLocalTime(String date) {
-        return LocalDateTime.of(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                LocalDateTime.now().toLocalTime()
-        );
+        return stringListHashMap;
     }
 
     /*
     * Get the ending time in local date format from the start and the duration
     * */
-    private LocalDateTime computeEndDate(String startDate, String duration) {
+    private static LocalDateTime computeEndDate(String startDate, String duration) {
+
         if (duration == "hourly") {
-            return convertDateToLocalTime(startDate).plusHours(1);
+            return DateAndTimeManager.convertDateToLocalTime(startDate).plusHours(1);
         } else if (duration == "daily") {
-            return convertDateToLocalTime(startDate).plusDays(1);
+            return DateAndTimeManager.convertDateToLocalTime(startDate).plusDays(1);
         }
         return null;
     }
@@ -91,84 +87,68 @@ public class DataOrganizationHelper {
     * get the list of the log entries between start
     * and the end time from all the log entries
     * */
-    public Stream<LogEntity> getRecordsBetweenDur(List<LogEntity> records, String startDate, String duration) {
+    public static Stream<LogEntity> getRecordsBetweenDur(List<LogEntity> records, String startDate, String duration) {
 
-        return records.stream().filter(
-                record -> ((convertDateToLocalTime(record.getTime()).isAfter(convertDateToLocalTime(startDate))
-                        && convertDateToLocalTime(record.getTime()).isBefore(computeEndDate(startDate, duration))
-                ))
-        );
+        Stream<LogEntity> logEntityStream = records.stream().filter(
+                record -> ((DateAndTimeManager.convertDateToLocalTime(record.getTime()).isAfter(DateAndTimeManager.convertDateToLocalTime(startDate))
+                        && DateAndTimeManager.convertDateToLocalTime(record.getTime()).isBefore(computeEndDate(startDate, duration))
+                )));
+        return logEntityStream;
     }
 
     /*
-    * retrun customized comment from the http server code
+    * retrun the customized comment from the http server code
     * */
-    private String returnMessageFromHttpServerCode(int serverBlockCode) {
+    private static String returnMessageFromHttpServerCode(int serverBlockCode) {
+        return String.valueOf(serverBlockCode) + "_" + HttpStatus.getStatusText(serverBlockCode);
+    }
 
-        if (LogEntryValidator.codeValidator(String.valueOf(serverBlockCode))) {
-            return String.valueOf(serverBlockCode) + "_" + HttpStatus.valueOf(serverBlockCode).name();
+    /*
+    * Get the list of the IpAddresses with start time, duration, threshold from all the records
+    * all the Ip address has associated with the list of corresponding http messages
+    * */
+    public static List<IpAddress> getIpAddressesFromAllRecordsWithDurationAndThresHold(List<LogEntity> records,
+                                                                                       String startDate, String duration, int threshhold) {
+        if (records == null || records.isEmpty() ||
+                startDate == null || startDate.isEmpty() ||
+                duration == null || duration.isEmpty() ||
+                threshhold <= 0) {
+
+            return new ArrayList<IpAddress>();
         }
 
-        return null;
-    }
+        HashMap<String, List<LogEntity>> groupRecordsByIpAddressMap = groupRecordsByIpAddress(records, startDate, duration, threshhold);
 
-    /*
-    * print the log entries to the console from the start and the duration
-    * from all the log entries parsed from the file
-    * */
-    public void printAll(List<LogEntity> records, String startDate, String duration) {
-        getRecordsBetweenDur(records, startDate, duration).forEachOrdered(System.out::println);
-    }
+        if (groupRecordsByIpAddressMap == null || groupRecordsByIpAddressMap.isEmpty()) {
+            return new ArrayList<IpAddress>();
+        }
 
-    public void mapIpAddressAgainstComment(List<LogEntity> records, String startDate, String duration, int threshhold) {
+        ArrayList<IpAddress> ipAddresses = new ArrayList<IpAddress>();
 
-        List<HttpInfoMessage> comments = new ArrayList<>();
-
-        groupRecordsByIpAddress(records, startDate, duration, threshhold)
-                .entrySet()
-                .stream().forEach(hMapValue -> {
-
-
-            //            Session session = HibernateUtil.getSessionFactory().openSession();
-            Session session = null;
-            Transaction transaction = null;
+        groupRecordsByIpAddressMap.entrySet().stream().forEach(ipGroupedRecord -> {
 
             try {
 
-                transaction = session.beginTransaction();
-                IpAddress address = new IpAddress(hMapValue.getKey());
+                final List<HttpInfoMessage> httpInfoMessages = new ArrayList<>();
+                String ipAddressString = ipGroupedRecord.getKey();
 
-                ArrayList<IpAddress> addresses = new ArrayList<IpAddress>();
-                addresses.add(address);
-
-                hMapValue.getValue().stream().distinct()
+                ipGroupedRecord.getValue().stream().distinct()
                         .collect(Collectors.groupingBy(LogEntity::getCode))
-                        .entrySet().stream().forEach(leSet -> {
+                        .entrySet().stream().forEach(httpStatusCodeGroupedRecord -> {
 
-                    HttpInfoMessage comment = new HttpInfoMessage(Long.valueOf(leSet.getKey()), returnMessageFromHttpServerCode(leSet.getKey()), addresses);
-//                    HttpInfoMessage comment = new HttpInfoMessage(returnMessageFromHttpServerCode(leSet.getKey()));
-                    comments.add(comment);
-                    session.saveOrUpdate(comment);
+                    String httpMessage = returnMessageFromHttpServerCode((int) Integer.valueOf(httpStatusCodeGroupedRecord.getKey()));
+                    HttpInfoMessage httpInfoMessage = new HttpInfoMessage(Long.valueOf(httpStatusCodeGroupedRecord.getKey()), httpMessage);
+                    httpInfoMessages.add(httpInfoMessage);
                 });
 
-                transaction.commit();
+                IpAddress ipAddressEntity = new IpAddress(ipAddressString, httpInfoMessages);
+                ipAddresses.add(ipAddressEntity);
+
             } catch (Exception ex) {
-                transaction.rollback();
                 ex.printStackTrace();
-            } finally {
-                session.close();
             }
         });
 
-        System.out.println("_______________________________________");
-        System.out.println("BLOCKED IP vs COMMENT AGGREGATE LOGS ");
-        System.out.println("________________________________________");
-        System.out.println("  IP      :      COMMENT  ");
-        System.out.println("________________________________________");
-
-        comments.stream().forEachOrdered(c -> System.out.println(
-                c.getIpAddresses().get(0).getAddress() + " : " + c.getStatus()
-        ));
-        System.out.println("________________________________________");
+        return ipAddresses;
     }
 }

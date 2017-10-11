@@ -12,4 +12,6 @@ public interface IpAddressService {
     List<IpAddress> findAll();
 
     void save(IpAddress ipAddress);
+
+    void saveAllIpAddressses(List<IpAddress> ipAddresses);
 }

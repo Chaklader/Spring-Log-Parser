@@ -1,4 +1,4 @@
-package com.ef.util;
+package com.ef.service.util;
 
 import com.ef.entity.LogEntity;
 
@@ -6,8 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -15,12 +14,12 @@ import java.util.stream.Collectors;
  */
 public class FileManager {
 
-    public static List<LogEntity> logEntities;
+    public static List<LogEntity> logEntities = new ArrayList<>();
 
-    public FileManager() {
-        logEntities = new ArrayList<>();
-    }
-
+    /*
+    * read the log file line by line and returns the
+    * list of the Log entities
+    * */
     public static List<LogEntity> readFileByLines(String fileName) {
 
         List<String> lines = new ArrayList<>();
@@ -35,7 +34,9 @@ public class FileManager {
         }
 
         lines.forEach(line -> {
-            logEntities.add(LogParser.parseLogEntryByLine(line));
+
+            LogEntity logEntity = LogParser.parseLogEntryByLine(line);
+            logEntities.add(logEntity);
         });
 
         return logEntities;

@@ -1,5 +1,6 @@
 package com.ef.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
@@ -13,7 +14,10 @@ import java.util.List;
 public class HttpInfoMessage {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "S_ID")
+    private Long sId;
+
     @Column(name = "STATUS_ID")
     private Long statusId;
 
@@ -21,18 +25,31 @@ public class HttpInfoMessage {
     @NotEmpty
     private String status;
 
+    public HttpInfoMessage() {
+
+    }
+
     public HttpInfoMessage(String status) {
         this.status = status;
     }
 
-    public HttpInfoMessage() {
-
+    public HttpInfoMessage(Long statusId, String status) {
+        this.statusId = statusId;
+        this.status = status;
     }
 
     public HttpInfoMessage(Long statusId, String status, List<IpAddress> ipAddresses) {
         this.statusId = statusId;
         this.status = status;
         this.ipAddresses = ipAddresses;
+    }
+
+    public Long getsId() {
+        return sId;
+    }
+
+    public void setsId(Long sId) {
+        this.sId = sId;
     }
 
     public Long getStatusId() {
@@ -51,6 +68,14 @@ public class HttpInfoMessage {
         this.status = status;
     }
 
+//    @ManyToMany(cascade = CascadeType.ALL)
+//    @JoinTable(name = "IP_ADDR_STATUS",
+//            joinColumns = @JoinColumn(name = "STATUS_ID", referencedColumnName = "S_ID"),
+//            inverseJoinColumns = @JoinColumn(name = "IP_ADDRESS_ID", referencedColumnName = "IP_ADDR_ID"))
+//    private List<IpAddress> ipAddresses = new ArrayList<>();
+
+
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "httpInfoMessages")
     private List<IpAddress> ipAddresses = new ArrayList<>();
 

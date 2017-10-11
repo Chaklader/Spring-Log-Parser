@@ -1,4 +1,4 @@
-package com.ef.util;
+package com.ef.service.util;
 
 import com.ef.entity.LogEntity;
 import com.ef.validator.LogEntryValidator;
@@ -14,32 +14,26 @@ import java.util.regex.Pattern;
  */
 public class LogParser {
 
-    private static SimpleDateFormat formatedDate;
+    private static SimpleDateFormat formatedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
-    public LogParser() {
-        formatedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-    }
-
-    public static Date parseDate2(String dateStr) {
+    public static Date parseDate(String dateStr) {
         ParsePosition pp = new ParsePosition(0);
         return formatedDate.parse(dateStr, pp);
     }
 
     /*
-    * parse the log entries text lines
+    * parse the log entries from String
+    * ,acquire the values of date, ip address and http status code
+    * and the return as the log entry
     * */
-    public static LogEntity parseLogEntryByLine(String log) {
+    public static LogEntity parseLogEntryByLine(String line) {
 
         Pattern pattern = Pattern.compile(Pattern.quote("|"));
-        String[] data = pattern.split(log);
+        String[] data = pattern.split(line);
 
-        Date date = parseDate2(data[0]);
+        Date date = parseDate(data[0]);
         String IpAddress = LogEntryValidator.iPAddressValidate(data[1]) ? data[1] : null;
         Integer code = Integer.valueOf(data[3]);
-
-        System.out.println(code);
-        System.out.println(String.valueOf(code).trim());
-        System.out.println("Status is = " + LogEntryValidator.codeValidator(String.valueOf(code).trim()));
 
         return new LogEntity(IpAddress, date, code);
     }

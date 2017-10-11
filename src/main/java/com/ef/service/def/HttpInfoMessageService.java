@@ -13,4 +13,6 @@ public interface HttpInfoMessageService {
     List<HttpInfoMessage> findAll();
 
     void save(HttpInfoMessage httpInfoMessage);
+
+    void saveAllHttpInfoMessages(List<HttpInfoMessage> httpInfoMessages);
 }

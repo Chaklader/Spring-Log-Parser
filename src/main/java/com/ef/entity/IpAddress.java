@@ -22,18 +22,28 @@ public class IpAddress {
     @NotEmpty
     private String address;
 
+//    @JsonIgnore
+//    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "ipAddresses")
+//    private List<HttpInfoMessage> httpInfoMessages = new ArrayList<>();
+
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "IP_ADDR_STATUS",
             joinColumns = @JoinColumn(name = "IP_ADDRESS_ID", referencedColumnName = "IP_ADDR_ID"),
-            inverseJoinColumns = @JoinColumn(name = "STATUS_ID", referencedColumnName = "STATUS_ID"))
-    @JsonIgnore
+            inverseJoinColumns = @JoinColumn(name = "STATUS_ID", referencedColumnName = "S_ID"))
     private List<HttpInfoMessage> httpInfoMessages = new ArrayList<>();
+
+    public IpAddress() {
+
+    }
 
     public IpAddress(String address) {
         this.address = address;
     }
 
-    public IpAddress() {
+    public IpAddress(String address, List<HttpInfoMessage> httpInfoMessages) {
+        this.address = address;
+        this.httpInfoMessages = httpInfoMessages;
     }
 
     public Long getId() {
