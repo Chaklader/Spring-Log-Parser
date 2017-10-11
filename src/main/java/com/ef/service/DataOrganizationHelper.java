@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,8 +33,13 @@ public class DataOrganizationHelper {
             return new HashMap<String, List<LogEntity>>();
         }
 
-        Stream<LogEntity> logEntityStream = getRecordsBetweenDur(records, startDate, duration);
+        Stream<LogEntity> logEntityStream = getRecordsBetweenDur(records, startDate, duration).filter(Objects::nonNull);
 
+        if (logEntityStream == null) {
+            return new HashMap<String, List<LogEntity>>();
+        }
+
+        // here is the bug
         HashMap<String, List<LogEntity>> stringListHashMap = (HashMap<String, List<LogEntity>>) logEntityStream
                 .collect(Collectors.groupingBy(LogEntity::getIp));
 
@@ -58,7 +64,7 @@ public class DataOrganizationHelper {
         HashMap<String, List<LogEntity>> groupRecordsMap = groupRecordsByIpAddress(records, startDate, duration);
 
         if (groupRecordsMap == null || groupRecordsMap.isEmpty()) {
-            return null;
+            return new HashMap<String, List<LogEntity>>();
         }
 
         HashMap<String, List<LogEntity>> stringListHashMap = (HashMap<String, List<LogEntity>>) groupRecordsMap
@@ -93,6 +99,7 @@ public class DataOrganizationHelper {
                 record -> ((DateAndTimeManager.convertDateToLocalTime(record.getTime()).isAfter(DateAndTimeManager.convertDateToLocalTime(startDate))
                         && DateAndTimeManager.convertDateToLocalTime(record.getTime()).isBefore(computeEndDate(startDate, duration))
                 )));
+
         return logEntityStream;
     }
 

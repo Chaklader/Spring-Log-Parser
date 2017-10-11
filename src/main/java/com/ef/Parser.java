@@ -5,6 +5,8 @@ import com.ef.service.DataOrganizationHelper;
 import com.ef.service.def.IpAddressService;
 import com.ef.service.util.FileManager;
 import com.ef.entity.LogEntity;
+import com.ef.service.util.LogParser;
+import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +14,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static java.lang.System.exit;
 
@@ -53,59 +59,74 @@ public class Parser implements CommandLineRunner {
     }
 
 
-//        java -cp "parser.jar" com.ef.Parser --startDate=2000-10-21.21:55:36 --duration=hourly --threshold=100
-//        java -cp target/parser.jar com.ef.Parser --startDate=2000-10-21.21:55:36 --duration=hourly --threshold=100
-//        java -jar target/parser.jar com.ef.Parser --startDate=2000-10-21.21:55:36 --duration=hourly --threshold=100
+    private static SimpleDateFormat formatedDate = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss", Locale.US);
+
+    public static Date parseDate2(String dateStr) {
+        ParsePosition pp = new ParsePosition(0);
+        return formatedDate.parse(dateStr, pp);
+    }
+
+
+    // java -cp target/parser.jar -Dloader.main=com.ef.Parser org.springframework.boot.loader.PropertiesLauncher --startDate=2017-10-02.17:14:55 --duration=daily --threshold=100
+
+    // java -jar target/parser.jar com.ef.Parser --startDate=2017-10-02.17:14:55 --duration=daily --threshold=100
 
     @Override
     public void run(String... args) throws Exception {
 
-
-//        Options options = new Options();
+//        String startDate = "";
+//        String dur = "";
+//        int thers = -1;
 //
-//        Option start = new Option("startDate", "startDate", true, "Start date");
-//        start.setRequired(true);
-//        options.addOption(start);
+//        {
+//            Options options = new Options();
 //
-//        Option duration = new Option("duration", "duration", true, "duration");
-//        duration.setRequired(true);
-//        options.addOption(duration);
+//            Option start = new Option("startDate", "startDate", true, "Start date");
+//            start.setRequired(true);
+//            options.addOption(start);
 //
-//        Option threshold = new Option("threshold", "threshold", true, "threshold");
-//        threshold.setRequired(true);
-//        options.addOption(threshold);
+//            Option duration = new Option("duration", "duration", true, "duration");
+//            duration.setRequired(true);
+//            options.addOption(duration);
 //
-//        CommandLineParser parser = new DefaultParser();
-//        HelpFormatter formatter = new HelpFormatter();
-//        CommandLine cmd;
+//            Option threshold = new Option("threshold", "threshold", true, "threshold");
+//            threshold.setRequired(true);
+//            options.addOption(threshold);
 //
-//        try {
-//            cmd = parser.parse(options, args);
-//        } catch (ParseException e) {
-//            System.out.println(e.getMessage());
-//            formatter.printHelp("utility-name", options);
+//            CommandLineParser parser = new DefaultParser();
+//            HelpFormatter formatter = new HelpFormatter();
+//            CommandLine cmd;
 //
-//            System.exit(1);
-//            return;
+//            try {
+//                cmd = parser.parse(options, args);
+//            } catch (ParseException e) {
+//                System.out.println(e.getMessage());
+//                formatter.printHelp("utility-name", options);
+//
+//                System.exit(1);
+//                return;
+//            }
+//
+//            startDate = cmd.getOptionValue("startDate").trim().replace(".", " ");
+//            dur = cmd.getOptionValue("duration").trim();
+//            thers = (int) Integer.valueOf(cmd.getOptionValue("threshold").trim());
+//
+//            System.out.println("\n" + "Start date = " + startDate + "\n");
+//            System.out.println("\n" + dur + "\n");
+//            System.out.println("\n" + thers + "\n");
 //        }
-//
-//        String startDate = cmd.getOptionValue("startDate");
-//        String dur = cmd.getOptionValue("duration");
-//        String thers = cmd.getOptionValue("threshold");
-//
-//        System.out.println(startDate);
-//        System.out.println(dur);
-//        System.out.println(thers);
+
+        //        List<IpAddress> ipAddresses = DataOrganizationHelper
+//                .getIpAddressesFromAllRecordsWithDurationAndThresHold(allRecords, startDate,
+//                        dur, thers);
 
         List<LogEntity> allRecords = FileManager.readFileByLines("Log.txt");
 
         List<IpAddress> ipAddresses = DataOrganizationHelper
-                .getIpAddressesFromAllRecordsWithDurationAndThresHold(allRecords, "2017-10-01 01:51:12",
-                        "daily", 50);
+                .getIpAddressesFromAllRecordsWithDurationAndThresHold(allRecords, "2017-10-02 17:14:55",
+                        "daily", 100);
 
-        System.out.println("\nThe IP list size is = " + ipAddresses.size() + "\n");
-
-
+        // save the ip addresses and the http messages to the MySQL database
         ipAddressService.saveAllIpAddressses(ipAddresses);
 
         exit(0);
