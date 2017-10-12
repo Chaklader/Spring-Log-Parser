@@ -19,7 +19,7 @@ JAR file has to run in the same directory of the server log file "Log.txt" with 
 
     OR,
 
-    java -jar parser.jar com.ef.Parser --startDate=2017-10-02.17:14:55 --duration=daily --threshold=100
+    java -jar target/parser.jar com.ef.Parser --startDate=2017-10-02.17:14:55 --duration=daily --threshold=100
 
 Using these commands, the tool will find any IPs that made more than 100 requests starting from
 2017-10-02 17:14:55 to 2017-10-03 17:14:55 (one day) and print them to console AND also load them

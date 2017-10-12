@@ -30,7 +30,6 @@ public class LogEntryValidator {
         return validator(ip, IP_ADDRESS_PATTERN);
     }
 
-
     /*
     * find whether the String provided is a valid HTTP status code
     * */

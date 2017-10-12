@@ -47,7 +47,7 @@ public class Parser implements CommandLineRunner {
     * print all the IP addresses that is over the threshold
     * with all the http messages
     * */
-    public static void printIpWithHttpMessagesOverThreshold(List<IpAddress> ipAddresses) {
+    public static void printIpsAboveThresholdWithHttpMessages(List<IpAddress> ipAddresses) {
 
         System.out.println("  IP      :      COMMENT  ");
         ipAddresses.forEach(ipAddress -> {
@@ -64,7 +64,7 @@ public class Parser implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        /*Options options = new Options();
+        Options options = new Options();
 
         Option start = new Option("startDate", "startDate", true, "Start date");
         start.setRequired(true);
@@ -93,9 +93,8 @@ public class Parser implements CommandLineRunner {
         }
 
         String startDate = cmd.getOptionValue("startDate").trim().replace(".", " ");
-        String dur = cmd.getOptionValue("duration").trim();
-        int thers = (int) Integer.valueOf(cmd.getOptionValue("threshold").trim());*/
-
+        String dur = String.valueOf(cmd.getOptionValue("duration")).trim();
+        int thers = (int) Integer.valueOf(cmd.getOptionValue("threshold").trim());
 
         List<LogEntity> allRecords = FileManager.readFileByLines("Log.txt");
 
@@ -104,9 +103,9 @@ public class Parser implements CommandLineRunner {
 
         List<IpAddress> ipAddresses = DataOrganizationHelper
                 .getIpAddressesFromAllRecordsWithDurationAndThresHold(allRecords, "2017-10-02 17:14:55",
-                        "daily", 100);
+                        "daily", thers);
 
-        printIpWithHttpMessagesOverThreshold(ipAddresses);
+        printIpsAboveThresholdWithHttpMessages(ipAddresses);
 
         // save the ip addresses and the http messages to the MySQL database
         ipAddressService.saveAllIpAddressses(ipAddresses);

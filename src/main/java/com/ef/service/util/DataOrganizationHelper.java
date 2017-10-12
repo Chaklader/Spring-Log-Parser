@@ -20,6 +20,16 @@ import org.apache.commons.httpclient.HttpStatus;
  */
 public class DataOrganizationHelper {
 
+
+    /*
+    * Get a list of the Log entity and group them by the Ip address
+    * */
+    public HashMap<String, List<LogEntity>> groupRecordsByIpAddress(List<LogEntity> records) {
+
+        return (HashMap<String, List<LogEntity>>) records.stream()
+                .collect(Collectors.groupingBy(LogEntity::getIp));
+    }
+
     /*
     * get the map grouped by IP addresses with
     * the records, start date and the duration
