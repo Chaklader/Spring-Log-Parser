@@ -68,13 +68,6 @@ public class HttpInfoMessage {
         this.status = status;
     }
 
-//    @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinTable(name = "IP_ADDR_STATUS",
-//            joinColumns = @JoinColumn(name = "STATUS_ID", referencedColumnName = "S_ID"),
-//            inverseJoinColumns = @JoinColumn(name = "IP_ADDRESS_ID", referencedColumnName = "IP_ADDR_ID"))
-//    private List<IpAddress> ipAddresses = new ArrayList<>();
-
-
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "httpInfoMessages")
     private List<IpAddress> ipAddresses = new ArrayList<>();

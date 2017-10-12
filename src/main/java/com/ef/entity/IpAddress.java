@@ -22,11 +22,6 @@ public class IpAddress {
     @NotEmpty
     private String address;
 
-//    @JsonIgnore
-//    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "ipAddresses")
-//    private List<HttpInfoMessage> httpInfoMessages = new ArrayList<>();
-
-
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "IP_ADDR_STATUS",
             joinColumns = @JoinColumn(name = "IP_ADDRESS_ID", referencedColumnName = "IP_ADDR_ID"),

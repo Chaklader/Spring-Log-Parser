@@ -13,23 +13,25 @@ import java.util.List;
  * Created by Chaklader on Oct, 2017
  */
 @Service
-@Transactional
 public class IpAddressServiceImpl implements IpAddressService {
 
     @Autowired
     private IpAddressRepository ipAddressRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<IpAddress> findAll() {
         return (List<IpAddress>)ipAddressRepository.findAll();
     }
 
     @Override
+    @Transactional
     public void save(IpAddress ipAddress) {
         ipAddressRepository.save(ipAddress);
     }
 
     @Override
+    @Transactional
     public void saveAllIpAddressses(List<IpAddress> ipAddresses) {
         ipAddressRepository.save(ipAddresses);
     }

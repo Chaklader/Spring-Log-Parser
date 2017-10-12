@@ -13,23 +13,25 @@ import java.util.List;
  * Created by Chaklader on Oct, 2017
  */
 @Service
-@Transactional
 public class LogEntityServiceImpl implements LogEntityService {
 
     @Autowired
     private LogEntryRepository logEntryRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<LogEntity> findAll() {
         return (List<LogEntity>) logEntryRepository.findAll();
     }
 
     @Override
+    @Transactional
     public void save(LogEntity logEntity) {
         logEntryRepository.save(logEntity);
     }
 
     @Override
+    @Transactional
     public void saveAllLogEntities(List<LogEntity> logEntities) {
         logEntryRepository.save(logEntities);
     }

@@ -13,7 +13,6 @@ import java.util.List;
  * Created by Chaklader on Oct, 2017
  */
 @Service
-@Transactional
 public class HttpInfoMessageServiceImpl implements HttpInfoMessageService {
 
     @Autowired
@@ -23,6 +22,7 @@ public class HttpInfoMessageServiceImpl implements HttpInfoMessageService {
     * Find all the HttpInfoMessages from the database
     * */
     @Override
+    @Transactional(readOnly = true)
     public List<HttpInfoMessage> findAll() {
         return (List<HttpInfoMessage>) httpInfoMessageRepository.findAll();
     }
@@ -31,6 +31,7 @@ public class HttpInfoMessageServiceImpl implements HttpInfoMessageService {
     * save single entry of the  HttpInfoMessage to the database
     * */
     @Override
+    @Transactional
     public void save(HttpInfoMessage httpInfoMessage) {
         httpInfoMessageRepository.save(httpInfoMessage);
     }
@@ -40,6 +41,7 @@ public class HttpInfoMessageServiceImpl implements HttpInfoMessageService {
     * save the list of the HttpInfoMessages to the database
     * */
     @Override
+    @Transactional
     public void saveAllHttpInfoMessages(List<HttpInfoMessage> httpInfoMessages) {
         httpInfoMessageRepository.save(httpInfoMessages);
     }
