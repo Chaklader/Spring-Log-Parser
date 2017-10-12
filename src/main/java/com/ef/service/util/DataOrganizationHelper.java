@@ -1,4 +1,4 @@
-package com.ef.service;
+package com.ef.service.util;
 
 import com.ef.entity.IpAddress;
 import com.ef.entity.LogEntity;
