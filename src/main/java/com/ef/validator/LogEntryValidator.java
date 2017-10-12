@@ -23,14 +23,24 @@ public class LogEntryValidator {
 
     }
 
+    /*
+    * find whether the String provided is a valid IP address
+    * */
     public static boolean iPAddressValidate(final String ip) {
         return validator(ip, IP_ADDRESS_PATTERN);
     }
 
+
+    /*
+    * find whether the String provided is a valid HTTP status code
+    * */
     public static boolean codeValidator(final String text) {
         return validator(text, STATUS_CODE_PATTERN);
     }
 
+    /*
+    * validate the String based on the provided pattern
+    * */
     public static boolean validator(final String text, String pat) {
         pattern = Pattern.compile(pat);
         matcher = pattern.matcher(text);
