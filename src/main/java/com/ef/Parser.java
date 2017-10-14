@@ -7,7 +7,6 @@ import com.ef.service.def.IpAddressService;
 import com.ef.service.def.LogEntityService;
 import com.ef.service.util.FileManager;
 import com.ef.entity.LogEntity;
-import org.apache.commons.cli.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -33,6 +32,9 @@ public class Parser implements CommandLineRunner {
     @Autowired
     private LogEntityService logEntityService;
 
+//    @Autowired
+//    private IpService ipService;
+
     public Parser() {
 
     }
@@ -51,7 +53,7 @@ public class Parser implements CommandLineRunner {
 
         System.out.println("  IP      :      COMMENT  ");
         ipAddresses.forEach(ipAddress -> {
-            ipAddress.getHttpInfoMessages().forEach(
+            ipAddress.getHttpInfoMessage2s().forEach(
                     httpInfoMessage -> {
                         System.out.println(ipAddress.getAddress() + " : " + httpInfoMessage.getStatus());
                     }
@@ -64,7 +66,7 @@ public class Parser implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        Options options = new Options();
+        /*Options options = new Options();
 
         Option start = new Option("startDate", "startDate", true, "Start date");
         start.setRequired(true);
@@ -94,7 +96,7 @@ public class Parser implements CommandLineRunner {
 
         String startDate = cmd.getOptionValue("startDate").trim().replace(".", " ");
         String dur = String.valueOf(cmd.getOptionValue("duration")).trim();
-        int thers = (int) Integer.valueOf(cmd.getOptionValue("threshold").trim());
+        int thers = (int) Integer.valueOf(cmd.getOptionValue("threshold").trim());*/
 
         List<LogEntity> allRecords = FileManager.readFileByLines("Log.txt");
 
@@ -103,7 +105,13 @@ public class Parser implements CommandLineRunner {
 
         List<IpAddress> ipAddresses = DataOrganizationHelper
                 .getIpAddressesFromAllRecordsWithDurationAndThresHold(allRecords, "2017-10-02 17:14:55",
-                        "daily", thers);
+                        "daily", 100);
+
+        // some experiment
+//        List<Ip> ips = DataOrganizationHelper.getIpFromAllRecordsWithDurationAndThresHold(allRecords, "2017-10-02 17:14:55",
+//                "daily", 100);
+//        System.out.println("The size is = " + ips.size());
+//        ipService.saveAllIps(ips);
 
         printIpsAboveThresholdWithHttpMessages(ipAddresses);
 

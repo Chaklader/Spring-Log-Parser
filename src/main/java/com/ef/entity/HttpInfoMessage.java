@@ -21,8 +21,8 @@ public class HttpInfoMessage {
     @Column(name = "STATUS_ID")
     private Long statusId;
 
-    @Column(name = "STATUS")
     @NotEmpty
+    @Column(name = "STATUS")
     private String status;
 
     public HttpInfoMessage() {
@@ -41,7 +41,7 @@ public class HttpInfoMessage {
     public HttpInfoMessage(Long statusId, String status, List<IpAddress> ipAddresses) {
         this.statusId = statusId;
         this.status = status;
-        this.ipAddresses = ipAddresses;
+        this.ipAddress = ipAddresses;
     }
 
     public Long getsId() {
@@ -70,14 +70,14 @@ public class HttpInfoMessage {
 
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "httpInfoMessages")
-    private List<IpAddress> ipAddresses = new ArrayList<>();
+    private List<IpAddress> ipAddress = new ArrayList<>();
 
-    public List<IpAddress> getIpAddresses() {
-        return ipAddresses;
+    public List<IpAddress> getIpAddress2s() {
+        return ipAddress;
     }
 
-    public void setIpAddresses(List<IpAddress> ipAddresses) {
-        this.ipAddresses = ipAddresses;
+    public void setIpAddress2s(List<IpAddress> ipAddresses) {
+        this.ipAddress = ipAddresses;
     }
 
     @Override
@@ -85,10 +85,10 @@ public class HttpInfoMessage {
         if (this == o) return true;
         if (!(o instanceof HttpInfoMessage)) return false;
 
-        HttpInfoMessage httpInfoMessage1 = (HttpInfoMessage) o;
+        HttpInfoMessage httpInfoMessage21 = (HttpInfoMessage) o;
 
-        if (!getStatusId().equals(httpInfoMessage1.getStatusId())) return false;
-        return getStatus().equals(httpInfoMessage1.getStatus());
+        if (!getStatusId().equals(httpInfoMessage21.getStatusId())) return false;
+        return getStatus().equals(httpInfoMessage21.getStatus());
     }
 
     @Override

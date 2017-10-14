@@ -1,8 +1,6 @@
 package com.ef.service.util;
 
-import com.ef.entity.IpAddress;
-import com.ef.entity.LogEntity;
-import com.ef.entity.HttpInfoMessage;
+import com.ef.entity.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,22 +10,23 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.ef.service.util.DateAndTimeManager;
 import org.apache.commons.httpclient.HttpStatus;
+import org.springframework.data.mapping.Association;
 
 /**
  * Created by Chaklader on Oct, 2017
  */
 public class DataOrganizationHelper {
 
-
     /*
     * Get a list of the Log entity and group them by the Ip address
     * */
     public HashMap<String, List<LogEntity>> groupRecordsByIpAddress(List<LogEntity> records) {
 
-        return (HashMap<String, List<LogEntity>>) records.stream()
+        HashMap<String, List<LogEntity>> stringListHashMap = (HashMap<String, List<LogEntity>>) records.stream()
                 .collect(Collectors.groupingBy(LogEntity::getIp));
+
+        return stringListHashMap;
     }
 
     /*
@@ -168,4 +167,51 @@ public class DataOrganizationHelper {
 
         return ipAddresses;
     }
+
+
+//    public static List<Ip> getIpFromAllRecordsWithDurationAndThresHold(List<LogEntity> records,
+//                                                                       String startDate,
+//                                                                       String duration,
+//                                                                       int threshhold) {
+//
+//        HashMap<String, List<LogEntity>> groupRecordsByIpAddressMap =
+//                groupRecordsByIpAddress(records, startDate, duration, threshhold);
+//
+//        List<Ip> ips = new ArrayList<>();
+//
+//        groupRecordsByIpAddressMap.entrySet().stream().forEach(
+//                stringListEntry -> {
+//
+//                    try {
+//
+//                        List<Message> messages = new ArrayList<>();
+//                        List<IMAssociation> imAssociations = new ArrayList<>();
+//                        String address = stringListEntry.getKey();
+//
+//                        stringListEntry.getValue().stream().distinct().
+//                                collect(Collectors.groupingBy(LogEntity::getCode))
+//                                .entrySet().stream().forEach(
+//
+//                                integerListEntry -> {
+//
+//                                    String message = returnMessageFromHttpServerCode
+//                                            ((int) Integer.valueOf(integerListEntry.getKey()));
+//
+//                                    IMAssociation imAssociation = new IMAssociation(Long.valueOf(integerListEntry.getKey()),
+//                                            message);
+//                                    imAssociations.add(imAssociation);
+//                                }
+//                        );
+//
+//                        Ip ip = new Ip(address, imAssociations);
+//                        ips.add(ip);
+//
+//                    } catch (Exception ex) {
+//                        ex.printStackTrace();
+//                    }
+//                }
+//        );
+//
+//        return ips;
+//    }
 }

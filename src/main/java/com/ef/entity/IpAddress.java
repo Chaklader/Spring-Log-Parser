@@ -1,6 +1,5 @@
 package com.ef.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
@@ -24,8 +23,12 @@ public class IpAddress {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "IP_ADDR_STATUS",
-            joinColumns = @JoinColumn(name = "IP_ADDRESS_ID", referencedColumnName = "IP_ADDR_ID"),
-            inverseJoinColumns = @JoinColumn(name = "STATUS_ID", referencedColumnName = "S_ID"))
+            joinColumns = {
+                    @JoinColumn(name = "IP_ADDRESS_ID", referencedColumnName = "IP_ADDR_ID")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "STATUS_ID", referencedColumnName = "S_ID")
+            })
     private List<HttpInfoMessage> httpInfoMessages = new ArrayList<>();
 
     public IpAddress() {
@@ -57,11 +60,11 @@ public class IpAddress {
         this.address = address;
     }
 
-    public List<HttpInfoMessage> getHttpInfoMessages() {
+    public List<HttpInfoMessage> getHttpInfoMessage2s() {
         return httpInfoMessages;
     }
 
-    public void setHttpInfoMessages(List<HttpInfoMessage> httpInfoMessages) {
+    public void setHttpInfoMessage2s(List<HttpInfoMessage> httpInfoMessages) {
         this.httpInfoMessages = httpInfoMessages;
     }
 

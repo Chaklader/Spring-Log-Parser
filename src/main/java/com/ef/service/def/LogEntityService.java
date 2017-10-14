@@ -1,6 +1,5 @@
 package com.ef.service.def;
 
-import com.ef.entity.IpAddress;
 import com.ef.entity.LogEntity;
 
 import java.util.List;

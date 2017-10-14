@@ -2,7 +2,6 @@ package com.ef.repository;
 
 import com.ef.entity.HttpInfoMessage;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
 /**
  * Created by Chaklader on Oct, 2017
